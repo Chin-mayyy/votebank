@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteBank Query Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .query-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            background-color: #f9f9f9;
+        }
+        .loading {
+            display: none;
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VoteBank Query Interface</h1>
+        <div>
+            <input type="text" id="query" class="query-box" placeholder="Enter your question here...">
+            <button onclick="submitQuery()" class="submit-btn">Submit</button>
+        </div>
+        <div id="loading" class="loading">Processing your query...</div>
+        <div id="response" class="response-box"></div>
+    </div>
+
+    <script>
+        async function submitQuery() {
+            const query = document.getElementById('query').value;
+            const responseBox = document.getElementById('response');
+            const loading = document.getElementById('loading');
+            
+            if (!query) {
+                alert('Please enter a question');
+                return;
+            }
+
+            responseBox.innerHTML = '';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:8000/api/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: query })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let responseText = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const text = line.slice(6);
+                            responseText += text;
+                            responseBox.innerHTML = responseText;
+                        }
+                    }
+                }
+            } catch (error) {
+                responseBox.innerHTML = 'Error: ' + error.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Allow submitting with Enter key
+        document.getElementById('query').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitQuery();
+            }
+        });
+    </script>
+</body>
+</html> 

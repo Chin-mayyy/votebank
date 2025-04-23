@@ -1,0 +1,7 @@
+{
+  "api_key": "YOUR_VANNA_API_KEY",
+  "database": {
+    "type": "postgresql",
+    "connection_string": "postgresql://chinmay:votebank123@localhost:5432/votebank"
+  }
+} 
