@@ -44,5 +44,17 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Environment files
 .env
 backend/.env
+*.env.example
+backend/*.env.example
+
+# Credentials and secrets
+*credentials*.json
+*secret*.json
+*config*.json
+
+# Debug and test files that might contain credentials
+backend/tests/debug_*.py
+backend/tests/update_env.py

@@ -50,8 +50,8 @@ openai_client = OpenAI(api_key=openai_api_key)
 # Database connection parameters
 DB_PARAMS = {
     'dbname': os.getenv('DB_NAME', 'votebank'),
-    'user': os.getenv('DB_USER', 'chinmay'),
-    'password': os.getenv('DB_PASSWORD', '1234'),
+    'user': os.getenv('DB_USER', 'postgres'),
+    'password': os.getenv('DB_PASSWORD', ''),  # No default password for security
     'host': os.getenv('DB_HOST', 'localhost'),
     'port': os.getenv('DB_PORT', '5432')
 }
